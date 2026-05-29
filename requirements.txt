@@ -1,0 +1,25 @@
+# Core ML
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.4.2
+xgboost==2.0.3
+imbalanced-learn==0.12.3
+optuna==3.6.1
+shap==0.45.1
+joblib==1.4.2
+
+# API
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+pydantic==2.7.1
+
+# Dashboard
+streamlit==1.35.0
+plotly==5.22.0
+
+# Testing
+pytest==8.2.2
+httpx==0.27.0       # TestClient dependency
+
+# Utilities
+python-dotenv==1.0.1

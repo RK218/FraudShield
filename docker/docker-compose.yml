@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+
+  # ── FastAPI backend ──────────────────────────────────────────
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: fraudshield-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../models:/app/models:ro      # read-only model artefacts
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ── Streamlit dashboard ──────────────────────────────────────
+  dashboard:
+    image: python:3.11-slim
+    container_name: fraudshield-dashboard
+    working_dir: /app
+    command: >
+      bash -c "pip install streamlit requests pandas plotly --quiet &&
+               streamlit run src/dashboard.py --server.port 8501 --server.address 0.0.0.0"
+    volumes:
+      - ../src:/app/src
+    ports:
+      - "8501:8501"
+    environment:
+      - API_BASE=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
